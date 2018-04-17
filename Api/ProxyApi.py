@@ -1,93 +1,55 @@
-# -*- coding: utf-8 -*-
-# !/usr/bin/env python
-"""
--------------------------------------------------
-   File Name：     ProxyApi.py  
-   Description :  
-   Author :       JHao
-   date：          2016/12/4
--------------------------------------------------
-   Change Activity:
-                   2016/12/4: 
--------------------------------------------------
-"""
-__author__ = 'JHao'
-
 import sys
-from werkzeug.wrappers import Response
-from flask import Flask, jsonify, request
+from sanic import Sanic, response
 
-sys.path.append('../')
+sys.path.append('..')
 
 from Util.GetConfig import GetConfig
 from Manager.ProxyManager import ProxyManager
 
-app = Flask(__name__)
-
-
-class JsonResponse(Response):
-
-    @classmethod
-    def force_type(cls, response, environ=None):
-        if isinstance(response, (dict, list)):
-            response = jsonify(response)
-
-        return super(JsonResponse, cls).force_type(response, environ)
-
-
-app.response_class = JsonResponse
-
-api_list = {
-    'get': u'get an usable proxy',
-    # 'refresh': u'refresh proxy pool',
-    'get_all': u'get all proxy from proxy pool',
-    'delete?proxy=127.0.0.1:8080': u'delete an unable proxy',
-    'get_status': u'proxy statistics'
-}
-
+app = Sanic()
 
 @app.route('/')
 def index():
     return api_list
 
 
-@app.route('/get/')
-def get():
+@app.route('/get')
+async def get(request):
     proxy = ProxyManager().get()
-    return proxy if proxy else 'no proxy!'
+    return response.text(proxy)
 
 
-@app.route('/refresh/')
-def refresh():
+@app.route('/refresh')
+def refresh(request):
     # TODO refresh会有守护程序定时执行，由api直接调用性能较差，暂不使用
     # ProxyManager().refresh()
     pass
     return 'success'
 
 
-@app.route('/get_all/')
-def getAll():
+@app.route('/get_all')
+def getAll(request):
     proxies = ProxyManager().getAll()
-    return proxies
+    return response.json(proxies)
 
 
-@app.route('/delete/', methods=['GET'])
-def delete():
+@app.route('/delete', methods=['GET'])
+def delete(request):
     proxy = request.args.get('proxy')
     ProxyManager().delete(proxy)
-    return 'success'
+    return response.text('success')
 
 
-@app.route('/get_status/')
-def getStatus():
+@app.route('/get_status')
+def getStatus(request):
     status = ProxyManager().getNumber()
-    return status
+    return response.json(status)
+
 
 
 def run():
     config = GetConfig()
     app.run(host=config.host_ip, port=config.host_port)
-
 
 if __name__ == '__main__':
     run()
