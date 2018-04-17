@@ -72,7 +72,7 @@ class GetFreeProxy(object):
                     pass
 
     @staticmethod
-    def freeProxySecond(proxy_number=100):
+    def freeProxySecond(proxy_number=2000):
         """
         抓取代理66 http://www.66ip.cn/
         :param proxy_number: 代理数量
