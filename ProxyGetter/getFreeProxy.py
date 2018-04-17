@@ -213,6 +213,23 @@ class GetFreeProxy(object):
             proxies = re.findall(r"Proxy\('(.*?)'\)", r.text)
             for proxy in proxies:
                 yield base64.b64decode(proxy).decode()
+    
+    @staticmethod
+    def freeProxyQingTing():
+        """
+        蜻蜓代理
+        https://proxy.horocn.com/free-proxy.html
+        """
+        loc_names = '北京 | 天津 | 上海 | 重庆 | 河北 | 山西 | 辽宁 | 吉林 | 江苏 | 浙江 | 安徽 | 福建 | 江西 | 山东 | 河南 | 湖北 | 湖南 | 广东 | 甘肃 | 四川 | 贵州 | 海南 | 云南 | 青海 | 陕西 | 广西 | 西藏 | 宁夏 | 新疆'.split(' | ')
+        for loc_name in loc_names:
+            res = requests.get('https://proxy.horocn.com/api/free-proxy', params = {
+                'format': 'json',
+                'app_id': 159769810518115484690,
+                'loc_name': loc_name,
+            })
+            if res.status_code == 200:
+                for proxy in res.json():
+                    yield proxy.get('host') + ':' + proxy.get('port')
 
 
 if __name__ == '__main__':

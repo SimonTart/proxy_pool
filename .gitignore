@@ -1,3 +1,17 @@
 .idea/
 *.pyc
 *.log
+**/__pycache__
+eva-acfun/
+alembic_sample.sqlite
+.vscode
+**/__init__.pyc
+node_modules/
+extension/dist
+lib
+bin
+pyvenv.cfg
+.pip
+.pip-selfcheck.json
+.DS_Store
+ENV
